@@ -2,10 +2,10 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "A sample EC2 Stack that sets up an Instance for SSH connection",
   "Parameters": {
-    "defaultAWSKey": {
+    "DefaultKeyPair": {
       "Description": "Name of the existing key-pair that exists for EC2",
       "Type": "AWS::EC2::KeyPair::KeyName",
-      "ConstraintDescription": "must be the name of an existing EC2 KeyPair"
+      "Default": "DefaultKeyPair"
     },
     "InstanceType": {
       "Description": "The type of the EC2 Instance",
@@ -29,7 +29,7 @@
     "DebianAMI": {
       "Description": "Amazon Machine Image of the instance",
       "Type": "String",
-      "Default": "ami-09a41e26df464c548"
+      "Default": "ami-0c7c4e3c6b4941f0f"
     }
   },
   "Resources": {
@@ -39,11 +39,13 @@
         "InstanceType": {
           "Ref": "InstanceType"
         },
-        "SecurityGroups": {
-          "Ref": "InstanceSecurityGroup"
-        },
+        "SecurityGroups": [
+          {
+            "Ref": "InstanceSecurityGroup"
+          }
+        ],
         "KeyName": {
-          "Ref": "KeyName"
+          "Ref": "DefaultKeyPair"
         },
         "ImageId": {
           "Ref": "DebianAMI"
