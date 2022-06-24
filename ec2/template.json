@@ -1,0 +1,107 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "A sample EC2 Stack that sets up an Instance for SSH connection",
+  "Parameters": {
+    "DefaultKeyPair": {
+      "Description": "Name of the existing key-pair that exists for EC2",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default": "DefaultKeyPair"
+    },
+    "InstanceType": {
+      "Description": "The type of the EC2 Instance",
+      "Type": "String",
+      "Default": "t3.micro",
+      "AllowedValues": [
+        "t2.micro",
+        "t3.micro"
+      ],
+      "ConstraintDescription": "Must be a free tier instance type"
+    },
+    "SSHLocation": {
+      "Description": "The IP address range that can be used to SSH to the EC2 Instances",
+      "Type": "String",
+      "MinLength": 9,
+      "MaxLength": 18,
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x"
+    },
+    "DebianAMI": {
+      "Description": "Amazon Machine Image of the instance",
+      "Type": "String",
+      "Default": "ami-0c7c4e3c6b4941f0f"
+    }
+  },
+  "Resources": {
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "InstanceSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "DefaultKeyPair"
+        },
+        "ImageId": {
+          "Ref": "DebianAMI"
+        }
+      }
+    },
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable SSH access via port 22",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "InstanceId": {
+      "Description": "Instance ID of the newly create EC2 Instance",
+      "Value": {
+        "Ref": "EC2Instance"
+      }
+    },
+    "AZ": {
+      "Description": "AvailabilityZone of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "EC2Instance",
+          "AvailabilityZone"
+        ]
+      }
+    },
+    "PublicDNS": {
+      "Description": "Public DNSName of the newly created EC2 Instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "EC2Instance",
+          "PublicDnsName"
+        ]
+      }
+    },
+    "PublicIP": {
+      "Description": "The public IP address of the EC2 Instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "EC2Instance",
+          "PublicIp"
+        ]
+      }
+    }
+  }
+}
