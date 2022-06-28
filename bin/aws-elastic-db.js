@@ -2,8 +2,12 @@
 
 const cdk = require('aws-cdk-lib');
 const { AwsElasticDbStack } = require('../lib/aws-elastic-db-stack');
+const { AwsElasticDbVpcStack } = require('../lib/aws-elastic-db-vpc-stack');
 
 const app = new cdk.App();
+
+new AwsElasticDbVpcStack(app, 'AwsElasticDbVpcStack');
+
 new AwsElasticDbStack(app, 'AwsElasticDbStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
